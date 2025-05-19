@@ -33,5 +33,6 @@
     "permissions": [
       "scripting"
     ]
-  }
+  },
+  "packageManager": "pnpm@10.11.0"
 }
