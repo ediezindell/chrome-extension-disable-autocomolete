@@ -5,39 +5,36 @@ import withReactContent from "sweetalert2-react-content"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
-type Options = {
-  settings: {
-    url: string
-    selector: string
-  }[]
+import type { Option } from "./types"
+
+type Field = {
+  options: Option[]
 }
 
 function OptionsIndex() {
-  const [options, setOptions] = useStorage<Options>("options")
+  const [options, setOptions] = useStorage<Option[]>("options")
   const [mounted, onMounted] = useState(false)
 
-  const { control, register, handleSubmit } = useForm<
-    Options & { submit?: string }
-  >({
-    defaultValues: options
+  const { control, register, handleSubmit } = useForm<Field>({
+    defaultValues: {
+      options
+    }
   })
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "settings"
+    name: "options"
   })
 
   useEffect(() => {
     if (mounted || !options) return
-    options.settings.forEach((setting) => append(setting))
+    console.log("options", options)
+    options?.forEach((option) => append(option))
     onMounted(true)
   }, [options, mounted, append])
 
-  const onSubmit: SubmitHandler<Options & { submit?: string }> = (data) => {
-    if (!data?.submit) return
-    setOptions({
-      settings: data.settings.filter((item) => item.url || item.selector)
-    })
+  const onSubmit: SubmitHandler<Field> = (data) => {
+    setOptions(data.options.filter((item) => item.url || item.selector))
 
     withReactContent(Swal).fire({
       title: "Saved",
@@ -51,8 +48,8 @@ function OptionsIndex() {
       <ul>
         {fields.map((field, index) => (
           <li key={field.id}>
-            <input type="text" {...register(`settings.${index}.url`)} />
-            <input type="text" {...register(`settings.${index}.selector`)} />
+            <input type="text" {...register(`options.${index}.url`)} />
+            <input type="text" {...register(`options.${index}.selector`)} />
             <button type="button" onClick={() => remove(index)}>
               -
             </button>
