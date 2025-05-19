@@ -9,18 +9,21 @@ export const config: PlasmoCSConfig = {
 }
 
 const storage = new Storage()
-const options = (await storage.get<Option[]>("options")) ?? []
 
-options
-  .filter(({ url }) => location.href.startsWith(url))
-  .forEach(({ url, selector }) => {
-    const elements = document.querySelectorAll(selector)
-    elements.forEach((element) => {
-      element.setAttribute("autocomplete", "off")
-    })
-    console.log(
-      `Removed autocomplete from ${elements.length} elements matching ${selector} on ${url}`
-    )
-  })
+  ; (async () => {
+    const options = (await storage.get<Option[]>("options")) ?? []
+
+    options
+      .filter(({ url }) => location.href.startsWith(url))
+      .forEach(({ url, selector }) => {
+        const elements = document.querySelectorAll(selector)
+        elements.forEach((element) => {
+          element.setAttribute("autocomplete", "off")
+        })
+        console.log(
+          `Removed autocomplete from ${elements.length} elements matching ${selector} on ${url}`
+        )
+      })
+  })()
 
 export { }
