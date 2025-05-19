@@ -1,7 +1,8 @@
+import "./assets/style.css"
+
 import { useEffect, useState } from "react"
 import { useFieldArray, useForm, type SubmitHandler } from "react-hook-form"
 import Swal from "sweetalert2"
-import withReactContent from "sweetalert2-react-content"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
@@ -36,35 +37,96 @@ function OptionsIndex() {
   const onSubmit: SubmitHandler<Field> = (data) => {
     setOptions(data.options.filter((item) => item.url || item.selector))
 
-    withReactContent(Swal).fire({
-      title: "Saved",
-      text: "Your settings have been saved.",
-      icon: "success"
+    Swal.fire({
+      title: "保存しました",
+      icon: "success",
+      buttonsStyling: false
+    })
+  }
+
+  const handleRemove = (index: number) => {
+    Swal.fire({
+      title: "削除しますか？",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: true,
+      buttonsStyling: false
+    }).then((result) => {
+      if (result.isConfirmed) {
+        remove(index)
+        Swal.fire({
+          title: "削除しました",
+          icon: "success",
+          buttonsStyling: false
+        })
+      }
     })
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <ul>
-        {fields.map((field, index) => (
-          <li key={field.id}>
-            <input type="text" {...register(`options.${index}.url`)} />
-            <input type="text" {...register(`options.${index}.selector`)} />
-            <button type="button" onClick={() => remove(index)}>
-              -
-            </button>
-          </li>
-        ))}
-      </ul>
-      <button type="button" onClick={() => append({ url: "", selector: "" })}>
-        +
-      </button>
-      <div>
-        <button type="submit" {...register("submit")} value="submit">
-          Save
+    <div
+      style={{
+        display: "grid",
+        gap: "1rem",
+        gridTemplateColumns: "1fr",
+        placeContent: "center",
+        width: "100vw",
+        height: "100vh",
+        alignItems: "stretch",
+        paddingInline: "2rem"
+      }}>
+      <form onSubmit={handleSubmit(onSubmit)} className="container">
+        {fields.length > 0 ? (
+          <>
+            <div className="row">
+              <div className="six columns">URL (前方一致)</div>
+              <div className="five columns">
+                Selector (#id, .class, [type="date"] など)
+              </div>
+              <div className="one column">Remove</div>
+            </div>
+
+            {fields.map((field, index) => (
+              <div key={field.id} className="row">
+                <div className="six columns">
+                  <input
+                    type="text"
+                    {...register(`options.${index}.url`)}
+                    className="u-full-width"
+                  />
+                </div>
+                <div className="five columns">
+                  <input
+                    type="text"
+                    {...register(`options.${index}.selector`)}
+                    className="u-full-width"
+                  />
+                </div>
+                <div className="one column">
+                  <button type="button" onClick={() => handleRemove(index)}>
+                    remove
+                  </button>
+                </div>
+              </div>
+            ))}
+          </>
+        ) : (
+          <p>↓「ADD SITE」ボタンを押して設定したいサイトを追加してください</p>
+        )}
+        <div>
+          <button
+            type="button"
+            onClick={() => append({ url: "", selector: "" })}>
+            add site
+          </button>
+        </div>
+        <button type="submit" className="button-primary">
+          save
         </button>
-      </div>
-    </form>
+      </form>
+    </div>
   )
 }
 

@@ -26,9 +26,6 @@ importers:
       sweetalert2:
         specifier: ^11.21.2
         version: 11.21.2
-      sweetalert2-react-content:
-        specifier: ^5.1.0
-        version: 5.1.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sweetalert2@11.21.2)
     devDependencies:
       '@ianvs/prettier-plugin-sort-imports':
         specifier: 4.1.1
@@ -2891,13 +2888,6 @@ packages:
     resolution: {integrity: sha512-+N/Q9kV1+F+UeWYoSiULYo4xYSDQlTgb+ayMobAXPwMnLvop7oxKMo9OzIrX5x3eS4L4f2UHhc9axXwY8DpChg==}
     engines: {node: '>=10.13.0'}
     hasBin: true
-
-  sweetalert2-react-content@5.1.0:
-    resolution: {integrity: sha512-SBh41SdyHDY9NzwrIG6LACbClCMxIlEFP86tGVr/B4zGD4H2gGXB8o7UAJRc/RtBd/iQL9hIvuCAkrk0AgKEMA==}
-    peerDependencies:
-      react: ^18.0.0 || ^19.0.0
-      react-dom: ^18.0.0 || ^19.0.0
-      sweetalert2: ^11.0.0
 
   sweetalert2@11.21.2:
     resolution: {integrity: sha512-DNNFzx16LBQDZh7r5WOfeAfWZBdEdLHl3+tpO9Z1WWKMzdsgBgpLPBduJWVNMB283HYcm8ex99clLYXki21hdA==}
@@ -6215,12 +6205,6 @@ snapshots:
       csso: 4.2.0
       picocolors: 1.1.1
       stable: 0.1.8
-
-  sweetalert2-react-content@5.1.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sweetalert2@11.21.2):
-    dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      sweetalert2: 11.21.2
 
   sweetalert2@11.21.2: {}
 
