@@ -1,6 +1,6 @@
 import "./assets/style.css"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useFieldArray, useForm, type SubmitHandler } from "react-hook-form"
 import Swal from "sweetalert2"
 
@@ -16,15 +16,17 @@ type Field = {
 function OptionsIndex() {
   const [options, setOptions] = useStorage<Option[]>("options")
   const [allDisable, setAllDisable] = useStorage<boolean>("allDisable")
-  const [mounted, onMounted] = useState(false)
 
-  const { watch, control, register, handleSubmit } = useForm<Field>({
-    defaultValues: {
-      options,
-      allDisable
-    }
+  const defaultValues = {
+    options: options || [],
+    allDisable: allDisable || false
+  }
+
+  const { control, register, handleSubmit, reset, watch } = useForm<Field>({
+    defaultValues
   })
-  const watchAllDisable = watch("allDisable")
+
+  const watchAllDisable = watch("allDisable", false)
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -32,10 +34,11 @@ function OptionsIndex() {
   })
 
   useEffect(() => {
-    if (mounted || !options) return
-    options?.forEach((option) => append(option))
-    onMounted(true)
-  }, [options, mounted, append])
+    reset({
+      options: options || [],
+      allDisable: allDisable || false
+    })
+  }, [options, allDisable, reset])
 
   const onSubmit: SubmitHandler<Field> = (data) => {
     setOptions(data.options.filter((item) => item.url || item.selector))
@@ -92,7 +95,6 @@ function OptionsIndex() {
                 </div>
                 <div className="one column">Remove</div>
               </div>
-
               {fields.map((field, index) => (
                 <div key={field.id} className="row">
                   <div className="six columns">
