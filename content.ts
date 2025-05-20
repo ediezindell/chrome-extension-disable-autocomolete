@@ -10,20 +10,28 @@ export const config: PlasmoCSConfig = {
 
 const storage = new Storage()
 
-  ; (async () => {
-    const options = (await storage.get<Option[]>("options")) ?? []
+const disableAutocomplete = ({ url, selector }: Option) => {
+  const elements = document.querySelectorAll(selector)
+  elements.forEach((element) => {
+    element.setAttribute("autocomplete", "off")
+  })
+  console.log(
+    `Disabled autocomplete from ${elements.length} elements matching ${selector} on ${url}`
+  )
+}
 
+  ; (async () => {
+    const allDisable = (await storage.get<boolean>("allDisable")) ?? false
+    if (allDisable) {
+      const selector = "input, textarea, select, form"
+      disableAutocomplete({ url: "ALL_SITE", selector })
+      return
+    }
+
+    const options = (await storage.get<Option[]>("options")) ?? []
     options
       .filter(({ url }) => location.href.startsWith(url))
-      .forEach(({ url, selector }) => {
-        const elements = document.querySelectorAll(selector)
-        elements.forEach((element) => {
-          element.setAttribute("autocomplete", "off")
-        })
-        console.log(
-          `Removed autocomplete from ${elements.length} elements matching ${selector} on ${url}`
-        )
-      })
+      .forEach((option) => disableAutocomplete(option))
   })()
 
 export { }
