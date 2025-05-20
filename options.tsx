@@ -10,17 +10,21 @@ import type { Option } from "./types"
 
 type Field = {
   options: Option[]
+  allDisable: boolean
 }
 
 function OptionsIndex() {
   const [options, setOptions] = useStorage<Option[]>("options")
+  const [allDisable, setAllDisable] = useStorage<boolean>("allDisable")
   const [mounted, onMounted] = useState(false)
 
-  const { control, register, handleSubmit } = useForm<Field>({
+  const { watch, control, register, handleSubmit } = useForm<Field>({
     defaultValues: {
-      options
+      options,
+      allDisable
     }
   })
+  const watchAllDisable = watch("allDisable")
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -29,13 +33,13 @@ function OptionsIndex() {
 
   useEffect(() => {
     if (mounted || !options) return
-    console.log("options", options)
     options?.forEach((option) => append(option))
     onMounted(true)
   }, [options, mounted, append])
 
   const onSubmit: SubmitHandler<Field> = (data) => {
     setOptions(data.options.filter((item) => item.url || item.selector))
+    setAllDisable(data.allDisable)
 
     Swal.fire({
       title: "保存しました",
@@ -78,50 +82,58 @@ function OptionsIndex() {
         paddingInline: "2rem"
       }}>
       <form onSubmit={handleSubmit(onSubmit)} className="container">
-        {fields.length > 0 ? (
-          <>
-            <div className="row">
-              <div className="six columns">URL (前方一致)</div>
-              <div className="five columns">
-                Selector (#id, .class, [type="date"] など)
-              </div>
-              <div className="one column">Remove</div>
-            </div>
-
-            {fields.map((field, index) => (
-              <div key={field.id} className="row">
-                <div className="six columns">
-                  <input
-                    type="text"
-                    {...register(`options.${index}.url`)}
-                    className="u-full-width"
-                  />
-                </div>
+        <fieldset style={{ display: watchAllDisable ? "none" : "block" }}>
+          {fields.length > 0 ? (
+            <>
+              <div className="row">
+                <div className="six columns">URL (前方一致)</div>
                 <div className="five columns">
-                  <input
-                    type="text"
-                    {...register(`options.${index}.selector`)}
-                    className="u-full-width"
-                  />
+                  Selector (#id, .class, [type="date"] など)
                 </div>
-                <div className="one column">
-                  <button type="button" onClick={() => handleRemove(index)}>
-                    remove
-                  </button>
-                </div>
+                <div className="one column">Remove</div>
               </div>
-            ))}
-          </>
-        ) : (
-          <p>↓「ADD SITE」ボタンを押して設定したいサイトを追加してください</p>
-        )}
-        <div>
-          <button
-            type="button"
-            onClick={() => append({ url: "", selector: "" })}>
-            add site
-          </button>
-        </div>
+
+              {fields.map((field, index) => (
+                <div key={field.id} className="row">
+                  <div className="six columns">
+                    <input
+                      type="text"
+                      {...register(`options.${index}.url`)}
+                      className="u-full-width"
+                    />
+                  </div>
+                  <div className="five columns">
+                    <input
+                      type="text"
+                      {...register(`options.${index}.selector`)}
+                      className="u-full-width"
+                    />
+                  </div>
+                  <div className="one column">
+                    <button type="button" onClick={() => handleRemove(index)}>
+                      remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <p>↓「ADD SITE」ボタンを押して設定したいサイトを追加してください</p>
+          )}
+          <div>
+            <button
+              type="button"
+              onClick={() => append({ url: "", selector: "" })}>
+              add site
+            </button>
+          </div>
+        </fieldset>
+        <fieldset>
+          <label>
+            <input type="checkbox" {...register("allDisable")} />
+            <strong>すべてのサイトのすべての入力欄で無効化する</strong>
+          </label>
+        </fieldset>
         <button type="submit" className="button-primary">
           save
         </button>
